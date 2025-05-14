@@ -2,9 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>El truco más bello</title>
-  <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
   <style>
     * {
@@ -15,15 +14,54 @@
     body, html {
       height: 100%;
       font-family: 'Poppins', sans-serif;
-      color: white;
+      background: #0d0d0d;
+      color: #fff;
       overflow: hidden;
     }
-    #particles-js {
-      position: absolute;
+    .hearts {
+      position: fixed;
       width: 100%;
       height: 100%;
+      top: 0;
+      left: 0;
+      overflow: hidden;
       z-index: -1;
     }
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      transform: rotate(45deg);
+      animation: float 10s linear infinite;
+      opacity: 0.8;
+    }
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      border-radius: 50%;
+    }
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(45deg);
+      }
+      100% {
+        transform: translateY(-100vh) rotate(45deg);
+      }
+    }
+
     .content {
       position: absolute;
       top: 50%;
@@ -53,13 +91,6 @@
       background-color: gold;
       transform: scale(1.1);
     }
-    .fade-in {
-      animation: fadeIn 2s forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
     input {
       margin: 10px 0;
       padding: 12px;
@@ -68,26 +99,6 @@
       border: none;
       width: 100%;
       font-family: 'Quicksand', sans-serif;
-    }
-    .message {
-      margin-top: 20px;
-      font-size: 18px;
-      color: #ff0;
-    }
-    video {
-      width: 100%;
-      max-width: 400px;
-      border: 8px solid gold;
-      border-radius: 12px;
-      margin-top: 20px;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-      opacity: 0;
-      transform: scale(0);
-      animation: cameraAppears 2s ease-out forwards;
-    }
-    @keyframes cameraAppears {
-      0% { opacity: 0; transform: scale(0); }
-      100% { opacity: 1; transform: scale(1); }
     }
     .countdown {
       font-size: 40px;
@@ -100,11 +111,30 @@
     }
     @keyframes glowEffect {
       0% {
-        text-shadow: 0 0 10px #fff, 0 0 20px #ff0000, 0 0 30px #ff0000;
+        text-shadow: 0 0 10px #fff, 0 0 20px #ff1493, 0 0 30px #ff1493;
       }
       100% {
-        text-shadow: 0 0 20px #fff, 0 0 30px #ff0000, 0 0 40px #ff0000;
+        text-shadow: 0 0 20px #fff, 0 0 30px #ff1493, 0 0 40px #ff1493;
       }
+    }
+    video {
+      width: 100%;
+      max-width: 400px;
+      border: 8px solid gold;
+      border-radius: 12px;
+      margin-top: 20px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    }
+    #end-message {
+      font-size: 32px;
+      color: #ff69b4;
+      margin-top: 20px;
+      display: none;
+      animation: fadeIn 2s ease-in forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     @media (max-width: 600px) {
@@ -122,23 +152,26 @@
   </style>
 </head>
 <body>
-  <div id="particles-js"></div>
 
+  <!-- Fondo de corazones -->
+  <div class="hearts" id="heart-container"></div>
+
+  <!-- Contenido principal -->
   <div class="content" id="step1">
-    <h1 class="fade-in glow">Bienvenida a un pequeño truco de magia...</h1>
+    <h1 class="glow">Bienvenida a un pequeño truco de magia...</h1>
     <button class="btn" onclick="goToStep(2)">Comenzar</button>
   </div>
 
   <div class="content hidden" id="step2">
-    <h2 class="fade-in">Responde estas preguntas mágicas...</h2>
+    <h2>Responde estas preguntas mágicas...</h2>
     <div id="question-container"></div>
     <button class="btn" id="next-btn" onclick="nextQuestion()">Siguiente</button>
-    <p class="message" id="responseMessage"></p>
+    <p id="responseMessage"></p>
   </div>
 
   <div class="content hidden" id="step3">
     <h2>Prepárate para el truco final...</h2>
-    <p class="fade-in glow">¿Quieres ver algo realmente hermoso?</p>
+    <p class="glow">¿Quieres ver algo realmente hermoso?</p>
     <button class="btn" onclick="startCountdown()">Sí</button>
     <button class="btn" onclick="goToStep(4)">No</button>
   </div>
@@ -151,72 +184,35 @@
   <div class="content hidden" id="step5">
     <h2 class="glow">Y ahora... abre los ojos 💖</h2>
     <video id="video" autoplay playsinline></video>
-    <p class="fade-in">¡Lo más hermoso es lo que ya tienes frente a ti!</p>
+    <p>¡Lo más hermoso es lo que ya tienes frente a ti!</p>
     <p>— Con cariño, Javi 💫</p>
+    <div id="end-message">Fin del truco ✨</div>
   </div>
 
   <script>
-    // Initialize particles.js for the magical effect
-    particlesJS("particles-js", {
-      "particles": {
-        "number": {
-          "value": 100,
-          "density": {
-            "enable": true,
-            "value_area": 800
-          }
-        },
-        "color": {
-          "value": "#fff"
-        },
-        "shape": {
-          "type": "circle",
-          "stroke": {
-            "width": 0,
-            "color": "#fff"
-          }
-        },
-        "opacity": {
-          "value": 0.5,
-          "random": true,
-          "anim": {
-            "enable": true,
-            "speed": 1,
-            "opacity_min": 0.1
-          }
-        },
-        "size": {
-          "value": 3,
-          "random": true,
-          "anim": {
-            "enable": true,
-            "speed": 1,
-            "size_min": 0.1
-          }
-        },
-        "line_linked": {
-          "enable": true,
-          "distance": 150,
-          "color": "#fff",
-          "opacity": 0.4,
-          "width": 1
-        },
-        "move": {
-          "enable": true,
-          "speed": 3,
-          "direction": "none",
-          "random": true,
-          "straight": false,
-          "out_mode": "out"
-        }
-      },
-      "retina_detect": true
-    });
+    // Fondo de corazones animado
+    function createHearts() {
+      const container = document.getElementById('heart-container');
+      for (let i = 0; i < 50; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = 5 + Math.random() * 5 + 's';
+        heart.style.opacity = Math.random();
+        container.appendChild(heart);
+      }
+    }
+    createHearts();
 
-    // Initialize question data (original questions)
+    // Navegación
+    function goToStep(stepNumber) {
+      document.querySelectorAll('.content').forEach(el => el.classList.add('hidden'));
+      document.getElementById('step' + stepNumber).classList.remove('hidden');
+    }
+
     const questions = [
       { question: "¿Cuál es tu color favorito?", answer: "" },
-      { question: "¿Qué flor te hace sonreír?", answer: "" },
+      { question: "¿Cuánto es 1 + 0?", answer: "" },
       { question: "¿Qué sueño quieres cumplir?", answer: "" },
       { question: "¿Qué lugar te gustaría visitar?", answer: "" },
       { question: "¿Qué recuerdo te hace más feliz?", answer: "" }
@@ -224,21 +220,16 @@
 
     let currentQuestionIndex = 0;
 
-    function goToStep(stepNumber) {
-      document.querySelectorAll('.content').forEach(el => el.classList.add('hidden'));
-      document.getElementById('step' + stepNumber).classList.remove('hidden');
-    }
-
     function showQuestion() {
-      const questionContainer = document.getElementById('question-container');
-      questionContainer.innerHTML = ` <input type="text" id="answer" placeholder="${questions[currentQuestionIndex].question}" /> `;
+      const container = document.getElementById('question-container');
+      container.innerHTML = `<input type="text" id="answer" placeholder="${questions[currentQuestionIndex].question}" />`;
     }
 
     function nextQuestion() {
       const answer = document.getElementById('answer').value;
       if (answer) {
         questions[currentQuestionIndex].answer = answer;
-        document.getElementById('responseMessage').textContent = "Respuesta correcta. ¡Ahora sigamos con el truco!";
+        document.getElementById('responseMessage').textContent = "Respuesta registrada 💫";
         currentQuestionIndex++;
         if (currentQuestionIndex < questions.length) {
           showQuestion();
@@ -255,12 +246,12 @@
       speak("Cierra los ojos...");
       let countdownValue = 3;
       const countdownElement = document.getElementById('countdown');
-      const countdownInterval = setInterval(() => {
+      const interval = setInterval(() => {
         countdownElement.textContent = countdownValue;
         speak(countdownValue.toString());
         countdownValue--;
         if (countdownValue < 0) {
-          clearInterval(countdownInterval);
+          clearInterval(interval);
           speak("Abre los ojos");
           goToStep(5);
           startCamera();
@@ -274,19 +265,34 @@
       window.speechSynthesis.speak(speech);
     }
 
+    let cameraStream = null;
+
     function startCamera() {
       const video = document.getElementById('video');
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
         .then(stream => {
           video.srcObject = stream;
+          cameraStream = stream;
+          setTimeout(() => {
+            stopCamera();
+            document.getElementById("end-message").style.display = "block";
+            speak("Fin del truco");
+          }, 15000); // 15 segundos
         })
         .catch(error => {
-          alert('No se pudo acceder a la cámara 😢');
+          alert("No se pudo acceder a la cámara 😢");
         });
     }
 
-    // Show the first question when the page loads
+    function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+    }
+
+    // Mostrar la primera pregunta al cargar
     showQuestion();
   </script>
+
 </body>
 </html>
